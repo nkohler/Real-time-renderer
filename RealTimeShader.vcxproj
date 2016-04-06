@@ -71,7 +71,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Programming\OpenGL\include\glfw;C:\Programming\OpenGL\include\glew;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Programming\OpenGL\include\glm;C:\Programming\OpenGL\include\glfw;C:\Programming\OpenGL\include\glew;$(IncludePath)</IncludePath>
     <ReferencePath>C:\Programming\OpenGL\lib\glfw;C:\Programming\OpenGL\bin\glew;$(ReferencePath)</ReferencePath>
     <LibraryPath>C:\Programming\OpenGL\lib\glfw;C:\Programming\OpenGL\lib\glew;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -80,7 +80,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Programming\OpenGL\include\glfw;C:\Programming\OpenGL\include\glew;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Programming\OpenGL\include\glm;C:\Programming\OpenGL\include\glfw;C:\Programming\OpenGL\include\glew;$(IncludePath)</IncludePath>
     <ReferencePath>C:\Programming\OpenGL\lib\glfw;C:\Programming\OpenGL\bin\glew;$(ReferencePath)</ReferencePath>
     <LibraryPath>C:\Programming\OpenGL\lib\glfw;C:\Programming\OpenGL\lib\glew;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -95,7 +95,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Programming\OpenGL\include\glfw;C:\Programming\OpenGL\include\glew;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Programming\OpenGL\include\glm;C:\Programming\OpenGL\include\glfw;C:\Programming\OpenGL\include\glew;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,7 +128,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Programming\OpenGL\include\glfw;C:\Programming\OpenGL\include\glew;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Programming\OpenGL\include\glm;C:\Programming\OpenGL\include\glfw;C:\Programming\OpenGL\include\glew;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -159,6 +159,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LinearRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

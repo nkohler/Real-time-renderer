@@ -4,28 +4,14 @@
 #include <glew.h>
 #include <glfw3.h>
 
+#include "LinearRenderer.h"
+
+#include <glm.hpp>
+#include <gtc\matrix_transform.hpp>
+#include <gtc\type_ptr.hpp>
+
 // Window/viewport dimensions
 GLuint WIDTH = 800, HEIGHT = 600;
-
-// TEMPORARY shader source
-
-const GLchar* vs_source = "#version 450 core\n"
-"layout (location = 0) in vec3 position;\n"
-"layout (location = 0) uniform vec3 colors[3];\n"
-"out vec4 vsColor;\n"
-"void main()\n"
-"{\n"
-"vsColor = vec4(colors[gl_VertexID], 1.0f);\n"
-"gl_Position = vec4(position, 1.0f);\n"
-"}\n\0";
-
-const GLchar* fs_source = "#version 450 core\n"
-"in vec4 vsColor;\n"
-"out vec4 color;\n"
-"void main()\n"
-"{\n"
-"color = vsColor;\n"
-"}\n\0";
 
 void key_callback(GLFWwindow* w, int key, int scancode, int action, int mods)
 {
@@ -70,61 +56,40 @@ int main(int argc, char** argv)
 	// Set viewport
 	glViewport(0, 0, WIDTH, HEIGHT);
 
-	// Load the shaders
-	// Vertex shader
-	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vs, 1, &vs_source, NULL);
-	glCompileShader(vs);
-	// Check for compile time errors
-	GLint success;
-	GLchar infoLog[512];
-	glGetShaderiv(vs, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vs, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	// Fragment shader
-	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fs, 1, &fs_source, NULL);
-	glCompileShader(fs);
-	// Check for compile time errors
-	glGetShaderiv(fs, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fs, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	// Link Program
-	GLuint program = glCreateProgram();
-	glAttachShader(program, vs);
-	glAttachShader(program, fs);
-	glLinkProgram(program);
-	// Check for linking errors
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(program, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
-	glDeleteShader(vs);
-	glDeleteShader(fs);
+	// Create a linear renderer
+	LinearRenderer lr = LinearRenderer("./shaders/linear_vertex.glsl", "./shaders/linear_fragment.glsl");
 
 	// TEMPORARY: Create data and all else needed to draw a triangle
-	GLfloat vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f,  0.5f, 0.0f
+	glm::vec3 vertices[] = {
+		glm::vec3(-0.5f, -0.5f, 0.0f),
+		glm::vec3(0.5f, -0.5f, 0.0f),
+		glm::vec3(-0.5f, 0.5f, 0.0f),
+		glm::vec3(0.5f, 0.5f, 0.0f),
 	};
-	GLuint vbo, vao;
+	GLuint indices[] = {
+		0, 1, 2, 3
+	};
+
+	// Generate objects for vertex array, vertex buffer, and index buffer
+	GLuint vbo, vao, ibo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ibo);
+
+	//Bind VAO and load data into VBO and IBO
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (GLvoid*)0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// Cleaning
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	// Rendering loop
 	while (!glfwWindowShouldClose(window))
@@ -133,21 +98,7 @@ int main(int argc, char** argv)
 		glfwPollEvents();
 
 		//Render stuff here
-		//Clear screen
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		// Determine color and draw stuff
-		glUseProgram(program);
-		float t = (float)glfwGetTime();
-		GLfloat colors[] = { 
-			sin(t) / 2 + 0.5f,		sin(t / 2) / 2 + 0.5f,	sin(t / 3) / 2 + 0.5f,
-			sin(t / 3) / 2 + 0.5f,	sin(t) / 2 + 0.5f,		sin(t / 2) / 2 + 0.5f,
-			sin(t / 2) / 2 + 0.5f,	sin(t / 3) / 2 + 0.5f,	sin(t) / 2 + 0.5f
-		};
-		glUniform3fv(0, 3, colors);
-		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glBindVertexArray(0);
+		lr.render(&vao);
 
 		// Swap screen buffers
 		glfwSwapBuffers(window);
@@ -155,7 +106,7 @@ int main(int argc, char** argv)
 
 	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(1, &vbo);
-	glDeleteProgram(program);
+	glDeleteBuffers(1, &ibo);
 
 	glfwTerminate();
 	return 0;
