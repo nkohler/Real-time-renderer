@@ -91,6 +91,7 @@ int main(int argc, char** argv)
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+	glEnable(GL_DEPTH_TEST);
 	// Rendering loop
 	while (!glfwWindowShouldClose(window))
 	{

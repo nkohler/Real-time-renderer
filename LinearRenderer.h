@@ -97,7 +97,7 @@ public:
 	{
 		//Clear screen
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Determine color and draw stuff
 		glUseProgram(this->program);
 		glBindVertexArray(*vao);
